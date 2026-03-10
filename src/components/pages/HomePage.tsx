@@ -1,5 +1,5 @@
 // HPI 1.7-V
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { Image } from '@/components/ui/image';
 import { Button } from '@/components/ui/button';
@@ -27,10 +27,10 @@ export default function HomePage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
 
-  useState(() => {
+  useEffect(() => {
     loadServices();
     loadCredentials();
-  });
+  }, []);
 
   const loadServices = async () => {
     try {
