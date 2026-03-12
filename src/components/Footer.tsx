@@ -59,25 +59,25 @@ export default function Footer() {
               <li className="flex items-start gap-3">
                 <Mail size={20} className="text-primary-foreground/80 mt-1 flex-shrink-0" />
                 <a 
-                  href="mailto:info@drur.com"
+                  href="mailto:ArkGrowth14@gmail..com"
                   className="font-paragraph text-base text-primary-foreground/80 hover:text-primary-foreground transition-colors"
                 >
-                  info@drur.com
+                  ArkGrowth14@gmail.com
                 </a>
               </li>
               <li className="flex items-start gap-3">
                 <Phone size={20} className="text-primary-foreground/80 mt-1 flex-shrink-0" />
                 <a 
-                  href="tel:+1234567890"
+                  href="tel:+15514974438"
                   className="font-paragraph text-base text-primary-foreground/80 hover:text-primary-foreground transition-colors"
                 >
-                  +1 (234) 567-890
+                  +1 (551) 497-4438
                 </a>
               </li>
               <li className="flex items-start gap-3">
                 <MapPin size={20} className="text-primary-foreground/80 mt-1 flex-shrink-0" />
                 <span className="font-paragraph text-base text-primary-foreground/80">
-                  Financial District, New York
+                  East Brunswick, New Jersey
                 </span>
               </li>
             </ul>
