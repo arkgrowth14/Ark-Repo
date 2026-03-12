@@ -1,2 +1,4 @@
-export { useCart, useCartStore } from './useCartStore';
-export type { CartItem, AddToCartInput } from './useCartStore';
+export { useCartStore, useCartStore as useCart } from './useCartStore';
+
+export type CartItem = any;
+export type AddToCartInput = any;
