@@ -1,17 +1,41 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Ark Growth</title>
+    <title>Ark Growth Explorer</title>
     <style>
-        body { font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; background-color: #f0f2f5; }
-        .card { background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); text-align: center; }
-        h1 { color: #1a73e8; }
+        body { font-family: sans-serif; padding: 40px; background: #0f172a; color: white; }
+        .container { max-width: 800px; margin: auto; }
+        h1 { color: #38bdf8; border-bottom: 2px solid #1e293b; padding-bottom: 10px; }
+        ul { list-style: none; padding: 0; }
+        li { background: #1e293b; margin: 10px 0; padding: 15px; border-radius: 8px; transition: 0.3s; }
+        li:hover { background: #334155; }
+        a { color: #facc15; text-decoration: none; font-weight: bold; font-size: 1.1rem; }
     </style>
 </head>
 <body>
-    <div class="card">
-        <h1>Ark Growth is Live!</h1>
-        <p>Your GitHub Pages site is successfully running without Wix.</p>
+    <div class="container">
+        <h1>Ark Growth | Repository Files</h1>
+        <p>Browsing files in: <strong>arkgrowth14/Ark-Repo</strong></p>
+        <ul id="file-list">Loading files...</ul>
     </div>
+
+    <script>
+        async function fetchFiles() {
+            const response = await fetch('https://api.github.com/repos/arkgrowth14/Ark-Repo/contents/');
+            const files = await response.json();
+            const listElement = document.getElementById('file-list');
+            listElement.innerHTML = '';
+
+            files.forEach(file => {
+                // Ignore the index.html itself and hidden files
+                if (file.name !== 'index.html' && !file.name.startsWith('.')) {
+                    const li = document.createElement('li');
+                    li.innerHTML = `<a href="${file.name}">${file.name}</a>`;
+                    listElement.appendChild(li);
+                }
+            });
+        }
+        fetchFiles();
+    </script>
 </body>
 </html>
