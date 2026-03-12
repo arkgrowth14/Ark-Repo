@@ -14,6 +14,8 @@ jobs:
         uses: actions/checkout@v4
       - name: Install, build, and upload
         uses: withastro/action@v3
+        with:
+          package-manager: npm  # <--- This line tells it to use npm even without a lockfile
   deploy:
     needs: build
     runs-on: ubuntu-latest
