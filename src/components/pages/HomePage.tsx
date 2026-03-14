@@ -301,9 +301,13 @@ export default function HomePage() {
                   </motion.div>
                 ))}
               </div>
-            ) : (
-              <div className="p-24 text-center">
-                <p className="font-paragraph text-lg text-deepbrown/60">Services portfolio is currently being updated.</p>
+) : (
+              <div className="py-12 md:py-24 px-6 text-center">
+                <p className="font-heading text-2xl text-deepbrown mb-4">Strategic Guidance</p>
+                <p className="font-paragraph text-lg md:text-xl text-deepbrown/80 max-w-3xl mx-auto leading-relaxed">
+                  Our comprehensive suite of financial advisory services is currently being tailored to better serve our clients. 
+                  For a private overview of our strategic offerings, please schedule a consultation below.
+                </p>
               </div>
             )}
           </div>
