@@ -7,13 +7,13 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { BaseCrudService } from '@/integrations';
-import { ContactInquiries, Services, ProfessionalCredentials } from '@/entities';
+import { Services, ProfessionalCredentials } from '@/entities';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { ArrowRight, ArrowUpRight, CheckCircle2 } from 'lucide-react';
 
 export default function HomePage() {
-  // --- CANONICAL DATA SOURCES & LOGIC (PRESERVED EXACTLY) ---
+  // --- DATA SOURCES ---
   const [services, setServices] = useState<Services[]>([]);
   const [credentials, setCredentials] = useState<ProfessionalCredentials[]>([]);
   const [isLoadingServices, setIsLoadingServices] = useState(true);
@@ -54,26 +54,36 @@ export default function HomePage() {
     }
   };
 
+  // --- FORMSPREE INTEGRATION ---
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
 
     try {
-      await BaseCrudService.create('inquiries', {
-        _id: crypto.randomUUID(),
-        name: formData.name,
-        email: formData.email,
-        phone: formData.phone,
-        message: formData.message,
-        submissionDate: new Date()
+      const response = await fetch("https://formspree.io/f/xkoqzdgz", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
+          message: formData.message,
+        }),
       });
 
-      toast({
-        title: "Message Sent",
-        description: "Thank you for your inquiry. We'll be in touch soon.",
-      });
-
-      setFormData({ name: '', email: '', phone: '', message: '' });
+      if (response.ok) {
+        toast({
+          title: "Message Sent",
+          description: "Thank you for your inquiry. We'll be in touch soon.",
+        });
+        // Clear the form fields
+        setFormData({ name: '', email: '', phone: '', message: '' });
+      } else {
+        throw new Error("Submission failed");
+      }
     } catch (error) {
       toast({
         title: "Error",
@@ -84,7 +94,6 @@ export default function HomePage() {
       setIsSubmitting(false);
     }
   };
-  // --- END CANONICAL DATA SOURCES ---
 
   // --- ANIMATION & SCROLL REFS ---
   const heroRef = useRef<HTMLDivElement>(null);
@@ -105,18 +114,11 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-background text-foreground selection:bg-primary/20 selection:text-primary overflow-clip">
       <Header />
-      {/* 
-        HERO SECTION 
-        Directly inspired by the structural layout of the provided image.
-        Features a strict visible grid, asymmetrical split, and inset imagery.
-      */}
+      
+      {/* HERO SECTION */}
       <section ref={heroRef} className="relative w-full pt-24 lg:pt-0 border-b border-deepbrown/15">
         <div className="grid grid-cols-1 lg:grid-cols-2 min-h-[90vh] lg:min-h-screen">
-          
-          {/* Left Column: Text & Inset */}
           <div className="flex flex-col justify-between border-r border-deepbrown/15 relative z-10 bg-background">
-            
-            {/* Top Main Content */}
             <motion.div 
               style={{ y: heroTextY }}
               className="p-8 md:p-16 lg:p-24 flex-grow flex flex-col justify-center"
@@ -153,7 +155,6 @@ export default function HomePage() {
               </motion.div>
             </motion.div>
 
-            {/* Bottom Inset Section (Replicating Image Motif) */}
             <div className="grid grid-cols-2 border-t border-deepbrown/15 h-48 lg:h-64">
               <div className="p-8 flex items-end">
                 <p className="font-paragraph text-sm text-deepbrown/70 max-w-[200px] leading-relaxed">
@@ -171,7 +172,6 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* Right Column: Massive Full Bleed Image */}
           <div className="relative h-[60vh] lg:h-auto overflow-hidden bg-deepbrown">
             <motion.div 
               style={{ y: heroImageY }}
@@ -183,16 +183,13 @@ export default function HomePage() {
                 className="w-full h-full object-cover"
                 width={1200}
               />
-              {/* Subtle gradient overlay for depth */}
               <div className="absolute inset-0 bg-gradient-to-b from-black/10 to-black/30 mix-blend-multiply" />
             </motion.div>
           </div>
         </div>
       </section>
-      {/* 
-        NARRATIVE BRIDGE 
-        A typographic breather section to establish tone before diving into data.
-      */}
+
+      {/* NARRATIVE BRIDGE */}
       <section className="py-24 lg:py-40 px-8 md:px-16 max-w-[100rem] mx-auto flex justify-center text-center">
         <motion.h2 
           initial={{ opacity: 0, y: 30 }}
@@ -204,14 +201,10 @@ export default function HomePage() {
           We believe that true wealth is not merely accumulated, but <span className="text-primary italic">architected</span> with intention, foresight, and unwavering discipline.
         </motion.h2>
       </section>
-      {/* 
-        SERVICES SECTION (Dynamic Sticky Layout)
-        Utilizes the Canonical 'services' data.
-      */}
+
+      {/* SERVICES SECTION */}
       <section id="services" ref={servicesRef} className="relative border-t border-deepbrown/15">
         <div className="max-w-[120rem] mx-auto grid grid-cols-1 lg:grid-cols-12">
-          
-          {/* Sticky Left Column */}
           <div className="lg:col-span-4 border-r border-deepbrown/15 relative">
             <div className="sticky top-0 h-screen flex flex-col justify-center p-8 md:p-16">
               <motion.div
@@ -226,8 +219,6 @@ export default function HomePage() {
                 <p className="font-paragraph text-lg text-deepbrown/80 mb-8">
                   Personalized financial solutions designed to meet your unique goals and circumstances, delivered with absolute clarity.
                 </p>
-                
-                {/* Animated Scroll Progress Line */}
                 <div className="w-[1px] h-32 bg-deepbrown/10 relative overflow-hidden mt-8">
                   <motion.div 
                     style={{ height: servicesLineHeight }}
@@ -238,7 +229,6 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* Scrolling Right Column (Data Mapping) */}
           <div className="lg:col-span-8">
             {isLoadingServices ? (
               <div className="h-screen flex items-center justify-center">
@@ -256,7 +246,6 @@ export default function HomePage() {
                     className="group border-b border-deepbrown/15 p-8 md:p-16 lg:p-24 hover:bg-white/50 transition-colors duration-500"
                   >
                     <div className="flex flex-col md:flex-row gap-12 items-start">
-                      {/* Icon/Image Slot */}
                       <div className="w-24 h-24 shrink-0 rounded-full overflow-hidden border border-deepbrown/10 bg-background flex items-center justify-center p-4 group-hover:border-primary/30 transition-colors">
                         {service.icon ? (
                           <Image 
@@ -269,8 +258,6 @@ export default function HomePage() {
                           <div className="w-full h-full bg-deepbrown/5 rounded-full" />
                         )}
                       </div>
-                      
-                      {/* Content */}
                       <div className="flex-grow">
                         <h3 className="font-heading text-3xl md:text-4xl text-foreground mb-4 group-hover:text-primary transition-colors">
                           {service.serviceName}
@@ -278,7 +265,6 @@ export default function HomePage() {
                         <p className="font-paragraph text-lg text-deepbrown/80 mb-6 leading-relaxed">
                           {service.description || service.shortDescription}
                         </p>
-                        
                         {service.benefits && (
                           <div className="mb-8 bg-background/50 p-6 border border-deepbrown/5 rounded-sm">
                             <h4 className="font-heading text-sm uppercase tracking-wider text-primary mb-3">Key Benefits</h4>
@@ -287,7 +273,6 @@ export default function HomePage() {
                             </p>
                           </div>
                         )}
-
                         {service.learnMoreUrl && (
                           <a 
                             href={service.learnMoreUrl}
@@ -301,7 +286,7 @@ export default function HomePage() {
                   </motion.div>
                 ))}
               </div>
-) : (
+            ) : (
               <div className="py-12 md:py-24 px-6 text-center">
                 <p className="font-heading text-2xl text-deepbrown mb-4">Strategic Guidance</p>
                 <p className="font-paragraph text-lg md:text-xl text-deepbrown/80 max-w-3xl mx-auto leading-relaxed">
@@ -313,14 +298,10 @@ export default function HomePage() {
           </div>
         </div>
       </section>
-      {/* 
-        CREDENTIALS SECTION (Dark Mode Break)
-        Utilizes the Canonical 'credentials' data.
-      */}
+
+      {/* CREDENTIALS SECTION */}
       <section className="bg-deepbrown text-background py-24 lg:py-40 relative overflow-hidden">
-        {/* Background Texture */}
         <div className="absolute inset-0 opacity-5 pointer-events-none" style={{ backgroundImage: 'radial-gradient(#F9F6F1 1px, transparent 1px)', backgroundSize: '32px 32px' }} />
-        
         <div className="max-w-[100rem] mx-auto px-8 md:px-16 relative z-10">
           <div className="flex flex-col md:flex-row justify-between items-end mb-20 gap-8 border-b border-background/20 pb-12">
             <motion.div
@@ -379,16 +360,6 @@ export default function HomePage() {
                       {credential.description}
                     </p>
                   )}
-                  {credential.credentialUrl && (
-                    <a 
-                      href={credential.credentialUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 font-paragraph text-sm text-background hover:text-primary transition-colors mt-auto"
-                    >
-                      Verify Credential <ArrowUpRight className="w-3 h-3" />
-                    </a>
-                  )}
                 </motion.div>
               ))
             ) : (
@@ -401,14 +372,10 @@ export default function HomePage() {
           </div>
         </div>
       </section>
-      {/* 
-        CONTACT SECTION (Editorial Split Layout)
-        Preserves the original form logic perfectly.
-      */}
+
+      {/* CONTACT SECTION */}
       <section id="contact" className="w-full border-t border-deepbrown/15">
         <div className="grid lg:grid-cols-2 min-h-[80vh]">
-          
-          {/* Left: Info */}
           <div className="p-8 md:p-16 lg:p-24 flex flex-col justify-center border-r border-deepbrown/15 bg-background">
             <motion.div
               initial={{ opacity: 0, x: -30 }}
@@ -430,7 +397,7 @@ export default function HomePage() {
                   <p className="font-paragraph text-lg text-foreground">Monday - Friday: 9:00 AM - 5:00 PM</p>
                 </div>
                 <div>
-                  <h3 className="font-heading text-sm uppercase tracking-widest mb-2 text-primary-foreground">Direct Contact</h3>
+                  <h3 className="font-heading text-sm uppercase tracking-widest mb-2 text-primary">Direct Contact</h3>
                   <p className="font-paragraph text-lg text-foreground">ArkGrowth14@gmail.com</p>
                   <p className="font-paragraph text-lg text-primary">1 551-497-4438</p>
                 </div>
@@ -438,7 +405,6 @@ export default function HomePage() {
             </motion.div>
           </div>
 
-          {/* Right: Form */}
           <div className="p-8 md:p-16 lg:p-24 flex flex-col justify-center bg-white">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
@@ -450,6 +416,7 @@ export default function HomePage() {
               <form onSubmit={handleSubmit} className="space-y-8">
                 <div className="relative">
                   <Input
+                    name="name"
                     id="name"
                     type="text"
                     required
@@ -462,6 +429,7 @@ export default function HomePage() {
 
                 <div className="relative">
                   <Input
+                    name="email"
                     id="email"
                     type="email"
                     required
@@ -474,6 +442,7 @@ export default function HomePage() {
 
                 <div className="relative">
                   <Input
+                    name="phone"
                     id="phone"
                     type="tel"
                     value={formData.phone}
@@ -485,6 +454,7 @@ export default function HomePage() {
 
                 <div className="relative pt-4">
                   <Textarea
+                    name="message"
                     id="message"
                     required
                     rows={4}
